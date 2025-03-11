@@ -26,20 +26,22 @@
 
     <script>
         async function fetchStats() {
-            const sheetURL = "https://docs.google.com/spreadsheets/d/1sJNdgC2eCKXoeLrBqo3jdCFmKyzGVIMThOfI1S2sLgM/gviz/tq?tqx=out:json
-"; // Replace with your sheet's public URL
+            const sheetURL = "https://docs.google.com/spreadsheets/d/1sJNdgC2eCKXoeLrBqo3jdCFmKyzGVIMThOfI1S2sLgM/gviz/tq?tqx=out:json";
+
             try {
                 let response = await fetch(sheetURL);
-                let data = await response.json();
-                let stats = data.values;
+                let text = await response.text(); // Get raw text response
+                let jsonText = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1); // Extract JSON
+                let data = JSON.parse(jsonText); // Convert to usable JSON
+                let rows = data.table.rows;
 
                 let rpgText = `
-                CHARACTER: ${stats[1][1]}
-                TITLE: ${stats[2][1]}
-                LEVEL: ${stats[3][1]}
-                CLASS: ${stats[4][1]}
-                XP: ${stats[5][1]} / ${stats[6][1]}
-                NEXT CLASS: ${stats[7][1]}
+                CHARACTER: ${rows[0].c[1].v}
+                TITLE: ${rows[1].c[1].v}
+                LEVEL: ${rows[2].c[1].v}
+                CLASS: ${rows[3].c[1].v}
+                XP: ${rows[4].c[1].v} / ${rows[5].c[1].v}
+                NEXT CLASS: ${rows[6].c[1].v}
                 `;
 
                 document.getElementById("rpgStats").innerText = rpgText;
