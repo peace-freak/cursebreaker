@@ -38,18 +38,24 @@
             try {
                 let response = await fetch(sheetURL);
                 let text = await response.text();
-                let jsonText = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
-                let data = JSON.parse(jsonText);
+                let jsonText = text.match(/\{.*\}/s); // Extract JSON properly
+                if (!jsonText) throw new Error("Invalid JSON format from Google Sheets");
+
+                let data = JSON.parse(jsonText[0]);
                 let rows = data.table.rows;
+
+                function safeGet(row, col) {
+                    return (row && row.c && row.c[col] && row.c[col].v) ? row.c[col].v : "N/A";
+                }
 
                 let rpgText = `
                 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-                ┃ CHARACTER: ${rows[0].c[1].v} ┃
-                ┃ TITLE: ${rows[1].c[1].v} ┃
-                ┃ LEVEL: ${rows[2].c[1].v} ┃
-                ┃ CLASS: ${rows[3].c[1].v} ┃
-                ┃ XP: ${rows[4].c[1].v} / ${rows[5].c[1].v} ┃
-                ┃ NEXT CLASS: ${rows[6].c[1].v} ┃
+                ┃ CHARACTER: ${safeGet(rows[0], 1)} ┃
+                ┃ TITLE: ${safeGet(rows[1], 1)} ┃
+                ┃ LEVEL: ${safeGet(rows[2], 1)} ┃
+                ┃ CLASS: ${safeGet(rows[3], 1)} ┃
+                ┃ XP: ${safeGet(rows[4], 1)} / ${safeGet(rows[5], 1)} ┃
+                ┃ NEXT CLASS: ${safeGet(rows[6], 1)} ┃
                 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
                 `;
 
