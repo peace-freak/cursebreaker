@@ -32,37 +32,35 @@
     </pre>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            async function fetchStats() {
-                const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLnb1brUGsSjsEwTvFmqR8bniQe39B3QrXEUwPNaPUkK0ot8n3WfSW543Ao4t6oWG1N8gvzxGUOfqr/pub?gid=0&single=true&output=csv";
+        async function fetchStats() {
+            const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLnb1brUGsSjsEwTvFmqR8bniQe39B3QrXEUwPNaPUkK0ot8n3WfSW543Ao4t6oWG1N8gvzxGUOfqr/pub?gid=0&single=true&output=csv";
 
-                try {
-                    let response = await fetch(sheetURL);
-                    let text = await response.text();
-                    
-                    let rows = text.split("\n").map(row => row.split(",")); // Split CSV into rows & columns
+            try {
+                let response = await fetch(sheetURL);
+                let text = await response.text();
+                let rows = text.split("\n").map(row => row.split(","));
 
-                    let rpgText = `
-                    ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-                    ┃ CHARACTER: ${rows[0][1] || "N/A"} ┃
-                    ┃ TITLE: ${rows[1][1] || "N/A"} ┃
-                    ┃ LEVEL: ${rows[2][1] || "N/A"} ┃
-                    ┃ CLASS: ${rows[3][1] || "N/A"} ┃
-                    ┃ XP: ${rows[4][1] || "N/A"} / ${rows[5][1] || "N/A"} ┃
-                    ┃ NEXT CLASS: ${rows[6][1] || "N/A"} ┃
-                    ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-                    `;
+                // Ensure we're mapping correctly to your sheet structure
+                let rpgText = `
+                ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+                ┃ CHARACTER: ${rows[0][1] || "N/A"} ┃
+                ┃ TITLE: ${rows[1][1] || "N/A"} ┃
+                ┃ LEVEL: ${rows[2][1] || "N/A"} ┃
+                ┃ CLASS: ${rows[3][1] || "N/A"} ┃
+                ┃ XP: ${rows[4][1] || "N/A"} / ${rows[5][1] || "N/A"} ┃
+                ┃ NEXT CLASS: ${rows[6][1] || "N/A"} ┃
+                ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+                `;
 
-                    document.getElementById("rpgStats").innerText = rpgText;
-                } catch (error) {
-                    document.getElementById("rpgStats").innerText = "⚠️ Error loading stats.";
-                    console.error("Error fetching data:", error);
-                }
+                document.getElementById("rpgStats").innerText = rpgText;
+            } catch (error) {
+                document.getElementById("rpgStats").innerText = "⚠️ Error loading stats.";
+                console.error("Error fetching data:", error);
             }
+        }
 
-            fetchStats();
-            setInterval(fetchStats, 86400000);
-        });
+        fetchStats();
+        setInterval(fetchStats, 86400000); // Refresh every 24 hours
     </script>
 </body>
 </html>
