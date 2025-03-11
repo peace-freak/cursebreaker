@@ -16,12 +16,19 @@
             font-size: 18px;
             white-space: pre-wrap;
         }
+        .blinking-cursor::after {
+            content: "█";
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
     </style>
 </head>
 <body>
     <h1>🔮 Curse Breaker's Quest 🏹</h1>
     <pre id="rpgStats">
-    Loading stats...
+    Loading stats... <span class="blinking-cursor"></span>
     </pre>
 
     <script>
@@ -30,18 +37,20 @@
 
             try {
                 let response = await fetch(sheetURL);
-                let text = await response.text(); // Get raw text response
-                let jsonText = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1); // Extract JSON
-                let data = JSON.parse(jsonText); // Convert to usable JSON
+                let text = await response.text();
+                let jsonText = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
+                let data = JSON.parse(jsonText);
                 let rows = data.table.rows;
 
                 let rpgText = `
-                CHARACTER: ${rows[0].c[1].v}
-                TITLE: ${rows[1].c[1].v}
-                LEVEL: ${rows[2].c[1].v}
-                CLASS: ${rows[3].c[1].v}
-                XP: ${rows[4].c[1].v} / ${rows[5].c[1].v}
-                NEXT CLASS: ${rows[6].c[1].v}
+                ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+                ┃ CHARACTER: ${rows[0].c[1].v} ┃
+                ┃ TITLE: ${rows[1].c[1].v} ┃
+                ┃ LEVEL: ${rows[2].c[1].v} ┃
+                ┃ CLASS: ${rows[3].c[1].v} ┃
+                ┃ XP: ${rows[4].c[1].v} / ${rows[5].c[1].v} ┃
+                ┃ NEXT CLASS: ${rows[6].c[1].v} ┃
+                ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
                 `;
 
                 document.getElementById("rpgStats").innerText = rpgText;
@@ -52,7 +61,7 @@
         }
 
         fetchStats();
-        setInterval(fetchStats, 86400000); // Auto-refresh daily
+        setInterval(fetchStats, 86400000);
     </script>
 </body>
 </html>
