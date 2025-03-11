@@ -36,13 +36,19 @@
             const sheetURL = "https://docs.google.com/spreadsheets/d/1sJNdgC2eCKXoeLrBqo3jdCFmKyzGVIMThOfI1S2sLgM/gviz/tq?tqx=out:json";
 
             try {
-                let response = await fetch(sheetURL);
-                let text = await response.text();
-                let jsonText = text.match(/\{.*\}/s); // Extract JSON properly
-                if (!jsonText) throw new Error("Invalid JSON format from Google Sheets");
+                let jsonText = text.match(/\{.*\}/s);
+if (!jsonText) throw new Error("Invalid JSON format from Google Sheets");
 
-                let data = JSON.parse(jsonText[0]);
-                let rows = data.table.rows;
+let data = JSON.parse(jsonText[0]);
+console.log("✅ Raw JSON Data:", data); // Debugging log
+
+if (!data.table || !data.table.rows) {
+    throw new Error("No rows found in Google Sheets response");
+}
+
+let rows = data.table.rows;
+console.log("✅ Extracted Rows:", rows); // Debugging log
+
 
                 function safeGet(row, col) {
                     return (row && row.c && row.c[col] && row.c[col].v) ? row.c[col].v : "N/A";
