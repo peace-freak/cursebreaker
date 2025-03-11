@@ -1,43 +1,66 @@
-<script>
-    async function fetchStats() {
-        const sheetURL = "https://docs.google.com/spreadsheets/d/1sJNdgC2eCKXoeLrBqo3jdCFmKyzGVIMThOfI1S2sLgM/gviz/tq?tqx=out:json";
-
-        try {
-            let response = await fetch(sheetURL);
-            let text = await response.text();
-            
-            // Extract JSON data from the response
-            let jsonText = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
-            let data = JSON.parse(jsonText);
-            let rows = data.table.rows;
-
-            // Debugging log (open console to check)
-            console.log("✅ Raw JSON Data:", data);
-            console.log("✅ Extracted Rows:", rows);
-
-            // Safely extract values (checking if they exist)
-            function getValue(rowIndex) {
-                return rows[rowIndex]?.c[2]?.v ?? "N/A";
-            }
-
-            let rpgText = `
-            ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-            ┃ CHARACTER: KACEMAN69       ┃
-            ┃ TITLE: BLOODTHIRSTY WHELP  ┃
-            ┃ LEVEL: ${getValue(0)}      ┃
-            ┃ CLASS: ${getValue(1)}      ┃
-            ┃ XP: ${getValue(2)} / ${getValue(3)} ┃
-            ┃ NEXT CLASS: ${getValue(4)} ┃
-            ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-            `;
-
-            document.getElementById("rpgStats").innerText = rpgText;
-        } catch (error) {
-            document.getElementById("rpgStats").innerText = "⚠️ Error loading stats.";
-            console.error("❌ Fetch error:", error);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curse Breaker RPG Tracker</title>
+    <style>
+        body {
+            background-color: black;
+            color: #00FF00;
+            font-family: "Courier New", monospace;
+            text-align: center;
+            padding: 20px;
         }
-    }
+        pre {
+            font-size: 18px;
+            white-space: pre-wrap;
+        }
+        .blinking-cursor::after {
+            content: "█";
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🔮 Curse Breaker's Quest 🏹</h1>
+    <pre id="rpgStats">
+    Loading stats... <span class="blinking-cursor"></span>
+    </pre>
 
-    fetchStats();
-    setInterval(fetchStats, 86400000);
-</script>
+    <script>
+        async function fetchStats() {
+            const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRLnb1brUGsSjsEwTvFmqR8bniQe39B3QrXEUwPNaPUkK0ot8n3WfSW543Ao4t6oWG1N8gvzxGUOfqr/pub?gid=0&single=true&output=csv";
+
+            try {
+                let response = await fetch(sheetURL);
+                let text = await response.text();
+                
+                let rows = text.split("\n").map(row => row.split(",")); // Split CSV into rows & columns
+
+                let rpgText = `
+                ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+                ┃ CHARACTER: ${rows[0][1] || "N/A"} ┃
+                ┃ TITLE: ${rows[1][1] || "N/A"} ┃
+                ┃ LEVEL: ${rows[2][1] || "N/A"} ┃
+                ┃ CLASS: ${rows[3][1] || "N/A"} ┃
+                ┃ XP: ${rows[4][1] || "N/A"} / ${rows[5][1] || "N/A"} ┃
+                ┃ NEXT CLASS: ${rows[6][1] || "N/A"} ┃
+                ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+                `;
+
+                document.getElementById("rpgStats").innerText = rpgText;
+            } catch (error) {
+                document.getElementById("rpgStats").innerText = "⚠️ Error loading stats.";
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        fetchStats();
+        setInterval(fetchStats, 86400000);
+    </script>
+</body>
+</html>
