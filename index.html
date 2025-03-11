@@ -26,7 +26,8 @@
 
     <script>
         async function fetchStats() {
-            const sheetURL = "YOUR_GOOGLE_SHEET_PUBLIC_URL"; // Replace with your sheet's public URL
+            const sheetURL = "https://docs.google.com/spreadsheets/d/1sJNdgC2eCKXoeLrBqo3jdCFmKyzGVIMThOfI1S2sLgM/gviz/tq?tqx=out:json
+"; // Replace with your sheet's public URL
             try {
                 let response = await fetch(sheetURL);
                 let data = await response.json();
