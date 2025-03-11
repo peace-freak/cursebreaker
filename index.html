@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curse Breaker RPG Tracker</title>
+    <style>
+        body {
+            background-color: black;
+            color: #00FF00;
+            font-family: "Courier New", monospace;
+            text-align: center;
+            padding: 20px;
+        }
+        pre {
+            font-size: 18px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔮 Curse Breaker's Quest 🏹</h1>
+    <pre id="rpgStats">
+    Loading stats...
+    </pre>
+
+    <script>
+        async function fetchStats() {
+            const sheetURL = "YOUR_GOOGLE_SHEET_PUBLIC_URL"; // Replace with your sheet's public URL
+            try {
+                let response = await fetch(sheetURL);
+                let data = await response.json();
+                let stats = data.values;
+
+                let rpgText = `
+                CHARACTER: ${stats[1][1]}
+                TITLE: ${stats[2][1]}
+                LEVEL: ${stats[3][1]}
+                CLASS: ${stats[4][1]}
+                XP: ${stats[5][1]} / ${stats[6][1]}
+                NEXT CLASS: ${stats[7][1]}
+                `;
+
+                document.getElementById("rpgStats").innerText = rpgText;
+            } catch (error) {
+                document.getElementById("rpgStats").innerText = "⚠️ Error loading stats.";
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        fetchStats();
+        setInterval(fetchStats, 86400000); // Auto-refresh daily
+    </script>
+</body>
+</html>
